@@ -48,78 +48,78 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		)
 	)--end action
 
-		fn _TurboSmooth obj itr =
-		(
-			/*
-				TurboSmooth lets you subdivide the geometry while interpolating
-				the angles of new faces at corners and edges, and apply a
-				single smoothing group to all faces in the object. The effect 
-				of TurboSmooth is to round over corners and edges as if they
-				had been filed or planed smooth. Use TurboSmooth parameters to 
-				control the size and number of new faces, and how they affect 
-				the surface of the object.
-				-
-				Use the TurboSmooth modifier to increase the poly/vertex count
-				of a mesh before optimizing, this generally creates a more
-				consistent vertex distribution with natural stochasticity.
-			*/
+	fn _TurboSmooth obj itr =
+	(
+		/*
+			TurboSmooth lets you subdivide the geometry while interpolating
+			the angles of new faces at corners and edges, and apply a
+			single smoothing group to all faces in the object. The effect 
+			of TurboSmooth is to round over corners and edges as if they
+			had been filed or planed smooth. Use TurboSmooth parameters to 
+			control the size and number of new faces, and how they affect 
+			the surface of the object.
+			-
+			Use the TurboSmooth modifier to increase the poly/vertex count
+			of a mesh before optimizing, this generally creates a more
+			consistent vertex distribution with natural stochasticity.
+		*/
 
-			print "Applying TurboSmooth Modifier.."
+		print "Applying TurboSmooth Modifier.."
 
-			modPanel.addModToSelection (TurboSmooth ()) --ui:on
-				obj.modifiers[#TurboSmooth].iterations = itr
-				obj.modifiers[#TurboSmooth].useRenderIterations = on
-				obj.modifiers[#TurboSmooth].renderIterations = 3
-				obj.modifiers[#TurboSmooth].explicitNormals = on
+		modPanel.addModToSelection (TurboSmooth ()) --ui:on
+			obj.modifiers[#TurboSmooth].iterations = itr
+			obj.modifiers[#TurboSmooth].useRenderIterations = on
+			obj.modifiers[#TurboSmooth].renderIterations = 3
+			obj.modifiers[#TurboSmooth].explicitNormals = on
 
-			print "Complete."
-		)
+		print "Complete."
+	)
 
-		fn _ProOptimizer obj prcnt =
-		(
-			/*
-				The ProOptimizer feature is an optimization tool that helps you 
-				reduce the number of vertices (and so the number of faces) in 
-				an object while preserving the object’s appearance. Options 
-				let you maintain material, mapping, and vertex color information
-				in the optimized model.
-				-
-				Once the model has been subdivided, use ProOptimizer to bring
-				the geometry back to a more manageable size.
-			*/
+	fn _ProOptimizer obj prcnt =
+	(
+		/*
+			The ProOptimizer feature is an optimization tool that helps you 
+			reduce the number of vertices (and so the number of faces) in 
+			an object while preserving the object’s appearance. Options 
+			let you maintain material, mapping, and vertex color information
+			in the optimized model.
+			-
+			Once the model has been subdivided, use ProOptimizer to bring
+			the geometry back to a more manageable size.
+		*/
 
-			print "Applying ProOptimizer Modifier.."
+		print "Applying ProOptimizer Modifier.."
 
-			modPanel.addModToSelection (ProOptimizer ())
-				obj.modifiers[#ProOptimizer].VertexPercent = prcnt -- Reduce mesh to 10% original vertex
-				obj.modifiers[#ProOptimizer].OptimizationMode = 1 -- (0) Crunch Borders (1) Protect Borders (2) Exclude Borders 
-				obj.modifiers[#ProOptimizer].Calculate = True -- Run optimization
+		modPanel.addModToSelection (ProOptimizer ())
+			obj.modifiers[#ProOptimizer].VertexPercent = prcnt -- Reduce mesh to 10% original vertex
+			obj.modifiers[#ProOptimizer].OptimizationMode = 1 -- (0) Crunch Borders (1) Protect Borders (2) Exclude Borders 
+			obj.modifiers[#ProOptimizer].Calculate = True -- Run optimization
 
-			print "Complete."
-		)
+		print "Complete."
+	)
 
-		fn _Relax obj itr =
-		(
-			/*
-				The Relax modifier changes the apparent surface tension in a mesh
-				by moving vertices closer to, or away from, their neighbors. 
-				The typical result is that the object gets smoother and a little 
-				smaller as the vertices move toward an averaged center point. 
-				You can see the most pronounced effects on objects with sharp
-				corners and edges.
-				-
-				Useful with the skeletonization process as it helps to relieve
-				stress brought on by the overlapping cylindrical volumes.
-			*/
+	fn _Relax obj itr =
+	(
+		/*
+			The Relax modifier changes the apparent surface tension in a mesh
+			by moving vertices closer to, or away from, their neighbors. 
+			The typical result is that the object gets smoother and a little 
+			smaller as the vertices move toward an averaged center point. 
+			You can see the most pronounced effects on objects with sharp
+			corners and edges.
+			-
+			Useful with the skeletonization process as it helps to relieve
+			stress brought on by the overlapping cylindrical volumes.
+		*/
 
-			print "Applying Relax Modifier.."
+		print "Applying Relax Modifier.."
 
-			modPanel.addModToSelection (Relax ())
-				obj.modifiers[#Relax].iterations = itr
-				obj.modifiers[#Relax].Relax_Value = 0.5
+		modPanel.addModToSelection (Relax ())
+			obj.modifiers[#Relax].iterations = itr
+			obj.modifiers[#Relax].Relax_Value = 0.5
 
-			print "Complete."
-		)
+		print "Complete."
+	)
 	
 )-- end rollout
 
