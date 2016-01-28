@@ -25,30 +25,12 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		else
 		(
 			Meshes = selection as array -- places the currently selected objects in an array when pressed
+			mc = Meshes.count as String
+			print ("Selection contains: " + mc + " meshes.")
 		)--end else
 	)--end action		
 	
-	on but_SWITCH pressed do
-	(
-		for i = 1 to Meshes.count do
-		(
-			mesh = Meshes[i]
-
-			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
-			
-			_TurboSmooth mesh 2 	-- Apply TurboSmooth (2)
-			_ProOptimizer mesh 10	-- Apply ProOptimizer (10%)
-			_Relax mesh 1			-- Apply Relax (1)
-
-			polyop.capHolesByEdge mesh #all -- Cap Holes
-
-			mesh.collapseStack -- Collapse Stack
-
-			print "Mesh: " + i + " Complete."
-		)
-	)--end action
-
-	fn _TurboSmooth obj itr =
+	fn nTurboSmooth obj itr =
 	(
 		/*
 			TurboSmooth lets you subdivide the geometry while interpolating
@@ -68,14 +50,11 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		modPanel.addModToSelection (TurboSmooth ()) --ui:on
 			obj.modifiers[#TurboSmooth].iterations = itr
-			obj.modifiers[#TurboSmooth].useRenderIterations = on
-			obj.modifiers[#TurboSmooth].renderIterations = 3
-			obj.modifiers[#TurboSmooth].explicitNormals = on
 
 		print "Complete."
 	)
 
-	fn _ProOptimizer obj prcnt =
+	fn nProOptimizer obj prcnt =
 	(
 		/*
 			The ProOptimizer feature is an optimization tool that helps you 
@@ -91,14 +70,18 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		print "Applying ProOptimizer Modifier.."
 
 		modPanel.addModToSelection (ProOptimizer ())
-			obj.modifiers[#ProOptimizer].VertexPercent = prcnt -- Reduce mesh to 10% original vertex
 			obj.modifiers[#ProOptimizer].OptimizationMode = 1 -- (0) Crunch Borders (1) Protect Borders (2) Exclude Borders 
-			obj.modifiers[#ProOptimizer].Calculate = True -- Run optimization
+			obj.modifiers[#ProOptimizer].VertexPercent = prcnt -- Reduce mesh to 10% original vertex
 
 		print "Complete."
 	)
+	
+	fn runProOptimizer obj = 
+	(
+		obj.modifiers[#ProOptimizer].Calculate = True -- Run optimization
+	)
 
-	fn _Relax obj itr =
+	fn nRelax obj itr =
 	(
 		/*
 			The Relax modifier changes the apparent surface tension in a mesh
@@ -121,6 +104,45 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		print "Complete."
 	)
 	
+	on but_SWITCH pressed do
+	(
+		for i = 1 to Meshes.count do
+		(
+			mesh = Meshes[i]
+			
+			select mesh -- Select working object
+
+			index = i as String
+			mesh_count = Meshes.count as String
+			mesh_id = mesh as String
+		
+			print ("Starting Mesh: " + mesh_id + " number:" + index + "|" + mesh_count)
+
+			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+		
+			nTurboSmooth mesh 2 	-- Apply TurboSmooth (2)
+			nRelax mesh 1			-- Apply Relax (1)
+			
+			polyop.capHolesByEdge mesh #all -- Cap Holes
+			polyop.capHolesByFace mesh #all -- Cap Holes
+			polyop.capHolesByVert mesh #all -- Cap Holes
+			
+			sleep 1
+
+			collapseStack mesh -- Collapse Stack
+			
+			sleep 1
+			
+			nProOptimizer mesh 10	-- Apply ProOptimizer (10%)
+			runProOptimizer mesh -- Run Optimization
+
+			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+			
+			print ("Completed " + mesh_id + " " + index)
+			
+			sleep 1
+		)
+	)--end action
 )-- end rollout
 
 createDialog NeuroMesh 200 250
