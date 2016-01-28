@@ -12,8 +12,9 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 (
 	button but_SObjs "Select Meshes" width:150 height:30 offset:[0,25]
 	button but_SWITCH "P R O C E S S" width:150 height:50 offset:[0,10]
+	button but_SWITCH1 "B I O I Z E" width:150 height:50 offset:[0,10]
 	
-	label lab_1 "Neuro Mesh 1.0" offset:[0,80]
+	label lab_1 "Neuro Mesh 1.0" offset:[0,50]
 	label lab_2 "2016 Alex Norton"
 	
 	local Meshes
@@ -104,6 +105,70 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		print "Complete."
 	)
 	
+	fn addDisplace obj =
+	(
+		/*
+			Displace distributes its force through four different gizmos: Planar,
+			Cylindrical, Spherical, and Shrink Wrap. Gizmos are also used as 
+			mapping coordinates for applying bitmaps. Sphere and Shrink Wrap
+			have the same effect when modeling, but differ in the way they map.
+		*/
+		
+		local ut = random 250 1500 -- Random tile parameters
+		local vt = random 250 1500
+		local wt = random 250 1500
+		
+		print ut
+		print vt
+		print wt
+		
+		local noiseMap = noise()
+				noiseMap.coords.Tiling = [ut,vt,wt] -- Default [1,1,1]
+		
+		local displaceStrength = random -4 4
+				displaceStrength *= 0.01
+		
+		local displaceModifier = Displace()
+				displaceModifier.lumCenterEnable = true
+				displaceModifier.strength = displaceStrength
+				displaceModifier.map = noiseMap
+				displaceModifier.maptype = 2 -- (0) Planar (1) Cylindrical (2) Spherical (3) Shrink Wrap
+		
+		addModifier obj displaceModifier
+	)
+
+	fn SetObjectRotation obj = -- Parameterize with rx ry rz  if necessary
+	(
+		-- Reset the object's transformation matrix so that 
+		-- it only includes position and scale information. 
+		-- Doing this clears out any previous object rotation.
+		local translateMat = transMatrix obj.transform.pos
+		local scaleMat = scaleMatrix obj.transform.scale
+		obj.transform = scaleMat * translateMat
+		
+		local rx = random 0 360 --> random rotation value x
+		local ry = random 0 360 --> random rotation value y
+		local rz = random 0 360 --> random rotation value z
+	   
+		-- Perform each axis rotation individually
+		rotate obj (angleaxis rx [1,0,0])
+		rotate obj (angleaxis ry [0,1,0])
+		rotate obj (angleaxis rz [0,0,1])
+	)
+	
+	fn SetObjectScale obj = -- Parameterize with ratio
+	(
+		local sx = random 0.85 1.15
+		local sy = random 0.85 1.15
+		local sz = random 0.85 1.15
+		
+		local scaleModifier = XForm()
+				scaleModifier.Gizmo.scale = [sx,sy,sz]
+		
+		addModifier obj scaleModifier 
+		--scale obj [sx,sy,sz]
+	)
+	
 	on but_SWITCH pressed do
 	(
 		for i = 1 to Meshes.count do
@@ -120,12 +185,12 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 		
-			nTurboSmooth mesh 2 	-- Apply TurboSmooth (2)
-			nRelax mesh 1			-- Apply Relax (1)
+			nTurboSmooth mesh 2 		-- Apply TurboSmooth (2)
+			nRelax mesh 1					-- Apply Relax (1)
 			
-			polyop.capHolesByEdge mesh #all -- Cap Holes
-			polyop.capHolesByFace mesh #all -- Cap Holes
-			polyop.capHolesByVert mesh #all -- Cap Holes
+			polyop.capHolesByEdge mesh #all 	-- Cap Holes
+			polyop.capHolesByFace mesh #all 	-- Cap Holes
+			polyop.capHolesByVert mesh #all 	-- Cap Holes
 			
 			sleep 1
 
@@ -133,8 +198,8 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			
 			sleep 1
 			
-			nProOptimizer mesh 10	-- Apply ProOptimizer (10%)
-			runProOptimizer mesh -- Run Optimization
+			nProOptimizer mesh 10		-- Apply ProOptimizer (10%)
+			runProOptimizer mesh 		-- Run Optimization
 
 			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 			
@@ -143,9 +208,41 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			sleep 1
 		)
 	)--end action
+	
+	on but_SWITCH1 pressed do
+	(
+		for i = 1 to Meshes.count do
+		(
+			mesh = Meshes[i]
+			
+			select mesh -- Select working object
+
+			index = i as String
+			mesh_count = Meshes.count as String
+			mesh_id = mesh as String
+		
+			print ("Starting Mesh: " + mesh_id + " number:" + index + "|" + mesh_count)
+
+			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+		
+			addDisplace  mesh 			-- Apply Displacement
+			SetObjectRotation mesh 	-- Apply Random Rotation
+			SetObjectScale mesh 		-- Apply Random Scaling
+		
+
+			--collapseStack mesh -- Collapse Stack
+
+			--ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+			
+			print ("Completed " + mesh_id + " " + index)
+			
+			--sleep 1
+		)
+	)--end action
+	
 )-- end rollout
 
-createDialog NeuroMesh 200 250
+createDialog NeuroMesh 200 300
 
 
 
