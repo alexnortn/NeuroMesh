@@ -40,7 +40,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			_ProOptimizer mesh 10	-- Apply ProOptimizer (10%)
 			_Relax mesh 1			-- Apply Relax (1)
 
-			polyop.capHolesByEdge mesh -- Cap Holes
+			polyop.capHolesByEdge mesh #all -- Cap Holes
 
 			mesh.collapseStack -- Collapse Stack
 
