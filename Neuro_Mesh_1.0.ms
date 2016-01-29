@@ -11,8 +11,9 @@ if ((NeuroMesh != undefined) and (NeuroMesh.isdisplayed)) do
 rollout NeuroMesh "Select Meshes" -- labels rollout
 (
 	button but_SObjs "Select Meshes" width:150 height:30 offset:[0,25]
-	button but_SWITCH "P R O C E S S" width:150 height:50 offset:[0,10]
-	button but_SWITCH1 "B I O I Z E" width:150 height:50 offset:[0,10]
+	button but_SWITCH "P R O C E S S" width:150 height:50 offset:[0,50]
+	button but_SWITCH1 "S O M A" width:150 height:50 offset:[0,10]
+	button but_SWITCH2 "S Y N A P S E" width:150 height:50 offset:[0,10]
 	
 	label lab_1 "Neuro Mesh 1.0" offset:[0,50]
 	label lab_2 "2016 Alex Norton"
@@ -105,7 +106,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		print "Complete."
 	)
 	
-	fn addDisplace obj =
+	fn addDisplace obj strength =
 	(
 		/*
 			Displace distributes its force through four different gizmos: Planar,
@@ -118,15 +119,11 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		local vt = random 250 1500
 		local wt = random 250 1500
 		
-		print ut
-		print vt
-		print wt
-		
 		local noiseMap = noise()
 				noiseMap.coords.Tiling = [ut,vt,wt] -- Default [1,1,1]
 		
 		local displaceStrength = random -4 4
-				displaceStrength *= 0.01
+				displaceStrength *= strength
 		
 		local displaceModifier = Displace()
 				displaceModifier.lumCenterEnable = true
@@ -169,6 +166,15 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		--scale obj [sx,sy,sz]
 	)
 	
+	fn SetObjectScaleSoma obj ratio = -- Parameterize with ratio
+	(
+		local scaleModifier = XForm()
+				scaleModifier.Gizmo.scale = [ratio,ratio,ratio]
+		
+		addModifier obj scaleModifier 
+		--scale obj [sx,sy,sz]
+	)
+	
 	on but_SWITCH pressed do
 	(
 		for i = 1 to Meshes.count do
@@ -181,7 +187,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			mesh_count = Meshes.count as String
 			mesh_id = mesh as String
 		
-			print ("Starting Mesh: " + mesh_id + " number:" + index + "|" + mesh_count)
+			print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
 
 			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 		
@@ -221,11 +227,11 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			mesh_count = Meshes.count as String
 			mesh_id = mesh as String
 		
-			print ("Starting Mesh: " + mesh_id + " number:" + index + "|" + mesh_count)
+			print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
 
 			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 		
-			addDisplace  mesh 			-- Apply Displacement
+			addDisplace  mesh 0.01		-- Apply Displacement
 			SetObjectRotation mesh 	-- Apply Random Rotation
 			SetObjectScale mesh 		-- Apply Random Scaling
 		
@@ -240,9 +246,41 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		)
 	)--end action
 	
+	on but_SWITCH2 pressed do
+	(
+		for i = 1 to Meshes.count do
+		(
+			mesh = Meshes[i]
+			
+			select mesh -- Select working object
+
+			index = i as String
+			mesh_count = Meshes.count as String
+			mesh_id = mesh as String
+		
+			print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
+
+			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+		
+			addDisplace  mesh 0.01					-- Apply Displacement
+			SetObjectRotation mesh 				-- Apply Random Rotation
+			SetObjectScaleSoma mesh 0.5 		-- Apply Random Scaling
+		
+
+			--collapseStack mesh -- Collapse Stack
+
+			--ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+			
+			print ("Mesh Complete")
+			print "\n"
+			
+			--sleep 1
+		)
+	)--end action
+	
 )-- end rollout
 
-createDialog NeuroMesh 200 300
+createDialog NeuroMesh 200 400
 
 
 
