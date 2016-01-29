@@ -315,7 +315,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 	
 )-- end rollout
 
-createDialog NeuroMesh 200 450
+createDialog NeuroMesh 200 475
 
 
 
