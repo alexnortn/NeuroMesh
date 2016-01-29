@@ -14,6 +14,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 	button but_SWITCH "P R O C E S S" width:150 height:50 offset:[0,50]
 	button but_SWITCH1 "S O M A" width:150 height:50 offset:[0,10]
 	button but_SWITCH2 "S Y N A P S E" width:150 height:50 offset:[0,10]
+	button but_SWITCH3 "T O G G L E" width:150 height:50 offset:[0,10]
 	
 	label lab_1 "Neuro Mesh 1.0" offset:[0,50]
 	label lab_2 "2016 Alex Norton"
@@ -278,9 +279,43 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		)
 	)--end action
 	
+	on but_SWITCH3 pressed do
+	(
+		for i = 1 to Meshes.count do
+		(
+			mesh = Meshes[i]
+			
+			select mesh -- Select working object
+
+			index = i as String
+			mesh_count = Meshes.count as String
+			mesh_id = mesh as String
+		
+			print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
+			
+			for mod in mesh.modifiers do 		-- For each modifier on stack
+			(
+				if (mod.enabled == true)
+					then
+						mod.enabled = false
+					else
+						mod.enabled = true
+				
+				print mod.enabled as String
+			)
+		
+			--ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+			
+			print ("Mesh Complete")
+			print "\n"
+			
+			--sleep 1
+		)
+	)--end action
+	
 )-- end rollout
 
-createDialog NeuroMesh 200 400
+createDialog NeuroMesh 200 450
 
 
 
