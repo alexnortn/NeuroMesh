@@ -188,138 +188,107 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		addModifier obj scaleModifier 
 	)
 
-	fn ProcessMeshes Meshes = 
+	fn bioize mesh = 
 	(
-		for i = 1 to Meshes.count do
-		(
-			mesh = Meshes[i]
-			
-			select mesh -- Select working object
+		select mesh -- Select working object
 
-			index = i as String
-			mesh_count = Meshes.count as String
-			mesh_id = mesh as String
+		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+	
+		nTurboSmooth mesh 2 -- Apply TurboSmooth (2)
+		nRelax mesh 1		-- Apply Relax (1)
 		
-			print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
-
-			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+		polyop.capHolesByEdge mesh #all 	-- Cap Holes
+		polyop.capHolesByFace mesh #all 	-- Cap Holes
+		polyop.capHolesByVert mesh #all 	-- Cap Holes
 		
-			nTurboSmooth mesh 2 -- Apply TurboSmooth (2)
-			nRelax mesh 1		-- Apply Relax (1)
-			
-			polyop.capHolesByEdge mesh #all 	-- Cap Holes
-			polyop.capHolesByFace mesh #all 	-- Cap Holes
-			polyop.capHolesByVert mesh #all 	-- Cap Holes
-			
-			sleep 1
+		sleep 1
 
-			collapseStack mesh -- Collapse Stack
-			
-			sleep 1
-			
-			nProOptimizer mesh 10		-- Apply ProOptimizer (10%)
-			runProOptimizer mesh 		-- Run Optimization
+		collapseStack mesh -- Collapse Stack
+		
+		sleep 1
+		
+		nProOptimizer mesh 10		-- Apply ProOptimizer (10%)
+		runProOptimizer mesh 		-- Run Optimization
 
-			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
-			
-			print ("Completed " + mesh_id + " " + index)
-			
-			sleep 1
-		)
+		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+		
+		sleep 1
 	)
 
-	fn generateSoma Meshes =
+	fn generateSoma mesh =
 	(
-		for i = 1 to Meshes.count do
-		(
-			mesh = Meshes[i]
-			
-			select mesh -- Select working object
+		select mesh -- Select working object
 
-			index = i as String
-			mesh_count = Meshes.count as String
-			mesh_id = mesh as String
-		
-			print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
+		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+	
+		addDisplace  mesh 0.01		-- Apply Displacement
+		SetObjectRotation mesh 		-- Apply Random Rotation
+		SetObjectScale mesh 		-- Apply Random Scaling
 
-			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
-		
-			addDisplace  mesh 0.01		-- Apply Displacement
-			SetObjectRotation mesh 		-- Apply Random Rotation
-			SetObjectScale mesh 		-- Apply Random Scaling
-		
-
-			--collapseStack mesh -- Collapse Stack
-
-			--ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
-			
-			print ("Completed " + mesh_id + " " + index)
-			
-			--sleep 1
-		)
+		--collapseStack mesh -- Collapse Stack
+		--ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+		--sleep 1
 	)
 
-	fn generateSynapse Meshes = 
+	fn generateSynapse mesh = 
 	(
-		for i = 1 to Meshes.count do
-		(
-			mesh = Meshes[i]
-			
-			select mesh -- Select working object
+		select mesh -- Select working object
 
-			index = i as String
-			mesh_count = Meshes.count as String
-			mesh_id = mesh as String
-		
-			print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
-
-			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
-		
-			addDisplace  mesh 0.01					-- Apply Displacement
-			SetObjectRotation mesh 				-- Apply Random Rotation
-			SetObjectScaleSoma mesh 0.5 		-- Apply Random Scaling
-		
-
-			--collapseStack mesh -- Collapse Stack
-
-			--ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
-			
-			print ("Mesh Complete")
-			print "\n"
-			
-			--sleep 1
-		)
+		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+	
+		addDisplace  mesh 0.01		-- Apply Displacement
+		SetObjectRotation mesh 		-- Apply Random Rotation
+		SetObjectScaleSoma mesh 0.5 -- Apply Random Scaling
+	
+		--collapseStack mesh -- Collapse Stack
+		--ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly		
+		--sleep 1
 	)
 
-	fn toggleModifiers Meshes = 
+	fn toggleModifier mesh = 
 	(
-		for i = 1 to Meshes.count do
+		select mesh -- Select working object
+			
+		for mod in mesh.modifiers do -- For each modifier on stack
 		(
-			mesh = Meshes[i]
+			if (mod.enabled == true)
+				then
+					mod.enabled = false
+				else
+					mod.enabled = true
 			
-			select mesh -- Select working object
+			print mod.enabled as String
+		)
 
-			index = i as String
-			mesh_count = Meshes.count as String
-			mesh_id = mesh as String
-		
-			print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
-			
-			for mod in mesh.modifiers do 		-- For each modifier on stack
+		--sleep 1
+	)
+
+	struct runProcess
+	(
+
+		monitorProgress =#(),
+		Meshes,
+		method,
+
+		fn run =
+		(
+			for i = 1 to Meshes.count do
 			(
-				if (mod.enabled == true)
-					then
-						mod.enabled = false
-					else
-						mod.enabled = true
+				mesh = Meshes[i]
 				
-				print mod.enabled as String
+				select mesh -- Select working object
+
+				index = i as String
+				mesh_count = Meshes.count as String
+				mesh_id = mesh as String
+			
+				print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
+
+				method(mesh) -- Run Method on mesh
+
+				print ("Mesh Complete")
+				print "\n"
 			)
-			
-			print ("Mesh Complete")
-			print "\n"
-			
-			--sleep 1
 		)
 	)
 
@@ -330,22 +299,26 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 	
 	on button2 pressed do -- Process Meshes
 	(
-		ProcessMeshes(Selection)
+		bioStruct = runProcess(Selection, bioize)
+		bioStruct.run() -- Run bioize on Selection
 	)
 	
 	on button3 pressed do -- Generate Soma
 	(
-		generateSoma(Selection)
+		somaStruct = runProcess(Selection, generateSoma)
+		somaStruct.run() -- Run generateSoma on Selection
 	)
 	
 	on button4 pressed do -- Generate Synapse
 	(
-		generateSynapse(Selection)	
+		synapseStruct = runProcess(Selection, generateSynapse)
+		synapseStruct.run() -- Run generateSynapse on Selection
 	)
 	
-	on button5 pressed do
+	on button5 pressed do -- Toggle Modifiers
 	(
-		toggleModifiers(Selection)	
+		toggleStruct = runProcess(Selection, toggleModifier)
+		toggleStruct.run() -- Run toggleModifier on Selection
 	)
 	
 ) -- end rollout
