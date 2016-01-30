@@ -4,34 +4,37 @@
 
 
 if ((NeuroMesh != undefined) and (NeuroMesh.isdisplayed)) do
-	(destroyDialog ObjectSeeed_Roll)
+	(
+		destroyDialog NeuroMesh -- Remove old NeuroMesh dialog
+	)
 	
 -- Destroys the rollout if one exists already
 
 rollout NeuroMesh "Select Meshes" -- labels rollout
 (
-	button but_SObjs "Select Meshes" width:150 height:30 offset:[0,25]
-	button but_SWITCH "P R O C E S S" width:150 height:50 offset:[0,50]
-	button but_SWITCH1 "S O M A" width:150 height:50 offset:[0,10]
-	button but_SWITCH2 "S Y N A P S E" width:150 height:50 offset:[0,10]
-	button but_SWITCH3 "T O G G L E" width:150 height:50 offset:[0,10]
+	button button1 "Select Meshes" width:150 height:30 offset:[0,25]
+	button button2 "P R O C E S S" width:150 height:50 offset:[0,50]
+	button button3 "S O M A" width:150 height:50 offset:[0,10]
+	button button4 "S Y N A P S E" width:150 height:50 offset:[0,10]
+	button button5 "T O G G L E" width:150 height:50 offset:[0,10]
 	
-	label lab_1 "Neuro Mesh 1.0" offset:[0,50]
-	label lab_2 "2016 Alex Norton"
+	label lab1 "Neuro Mesh 1.0" offset:[0,50]
+	label lab2 "2016 Alex Norton"
 	
-	local Meshes
-	
-	on but_SObjs pressed do
+	Global Selection -- Selection Array
+
+	fn makeSelection = 
 	(
 		if selection.count < 1
-			then messagebox "Please select some objects first." -- checks that 1 or more objects are currently selected
+			then messagebox "Please select some meshes first." -- checks that 1 or more meshes are currently selected
 		else
 		(
-			Meshes = selection as array -- places the currently selected objects in an array when pressed
-			mc = Meshes.count as String
-			print ("Selection contains: " + mc + " meshes.")
-		)--end else
-	)--end action		
+			Selection = selection as array -- places the currently selected objects in an array when pressed
+			local s = Selection.count as String
+
+			print ("Selection contains: " + s + " meshes.")
+		)
+	)
 	
 	fn nTurboSmooth obj itr =
 	(
@@ -51,8 +54,11 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		print "Applying TurboSmooth Modifier.."
 
-		modPanel.addModToSelection (TurboSmooth ()) --ui:on
-			obj.modifiers[#TurboSmooth].iterations = itr
+		local TurboSmoothModifier = TurboSmooth()	-- Delcare modifier
+		TurboSmoothModifier.iterations = itr 		-- Set attributes
+		
+		addModifier obj TurboSmoothModifier 		-- Apply modifier
+
 
 		print "Complete."
 	)
@@ -72,9 +78,12 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		print "Applying ProOptimizer Modifier.."
 
-		modPanel.addModToSelection (ProOptimizer ())
-			obj.modifiers[#ProOptimizer].OptimizationMode = 1 -- (0) Crunch Borders (1) Protect Borders (2) Exclude Borders 
-			obj.modifiers[#ProOptimizer].VertexPercent = prcnt -- Reduce mesh to 10% original vertex
+		local ProOptModifier = ProOptimizer()	-- Delcare modifier
+
+		ProOptModifier.OptimizationMode = 1 	-- (0) Crunch Borders (1) Protect Borders (2) Exclude Borders 
+		ProOptModifier.VertexPercent = prcnt 	-- Reduce mesh to 10% original vertex
+		
+		addModifier obj ProOptModifier 		-- Apply modifier
 
 		print "Complete."
 	)
@@ -100,9 +109,13 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		print "Applying Relax Modifier.."
 
-		modPanel.addModToSelection (Relax ())
-			obj.modifiers[#Relax].iterations = itr
-			obj.modifiers[#Relax].Relax_Value = 0.5
+		local relaxModifier = Relax() 		-- Delcare modifier
+
+		relaxModifier.iterations = itr 		-- Set attributes
+		relaxModifier.Relax_Value = 0.5		-- Set attributes
+		
+		addModifier obj relaxModifier 		-- Apply modifier
+
 
 		print "Complete."
 	)
@@ -121,16 +134,17 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		local wt = random 250 1500
 		
 		local noiseMap = noise()
-				noiseMap.coords.Tiling = [ut,vt,wt] -- Default [1,1,1]
+		noiseMap.coords.Tiling = [ut,vt,wt] -- Default [1,1,1]
 		
 		local displaceStrength = random -4 4
-				displaceStrength *= strength
+		displaceStrength *= strength
 		
 		local displaceModifier = Displace()
-				displaceModifier.lumCenterEnable = true
-				displaceModifier.strength = displaceStrength
-				displaceModifier.map = noiseMap
-				displaceModifier.maptype = 2 -- (0) Planar (1) Cylindrical (2) Spherical (3) Shrink Wrap
+		
+		displaceModifier.lumCenterEnable = true
+		displaceModifier.strength = displaceStrength
+		displaceModifier.map = noiseMap
+		displaceModifier.maptype = 2 -- (0) Planar (1) Cylindrical (2) Spherical (3) Shrink Wrap
 		
 		addModifier obj displaceModifier
 	)
@@ -161,10 +175,9 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		local sz = random 0.85 1.15
 		
 		local scaleModifier = XForm()
-				scaleModifier.Gizmo.scale = [sx,sy,sz]
+		scaleModifier.Gizmo.scale = [sx,sy,sz]
 		
 		addModifier obj scaleModifier 
-		--scale obj [sx,sy,sz]
 	)
 	
 	fn SetObjectScaleSoma obj ratio = -- Parameterize with ratio
@@ -173,10 +186,9 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 				scaleModifier.Gizmo.scale = [ratio,ratio,ratio]
 		
 		addModifier obj scaleModifier 
-		--scale obj [sx,sy,sz]
 	)
-	
-	on but_SWITCH pressed do
+
+	fn ProcessMeshes Meshes = 
 	(
 		for i = 1 to Meshes.count do
 		(
@@ -192,8 +204,8 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 		
-			nTurboSmooth mesh 2 		-- Apply TurboSmooth (2)
-			nRelax mesh 1					-- Apply Relax (1)
+			nTurboSmooth mesh 2 -- Apply TurboSmooth (2)
+			nRelax mesh 1		-- Apply Relax (1)
 			
 			polyop.capHolesByEdge mesh #all 	-- Cap Holes
 			polyop.capHolesByFace mesh #all 	-- Cap Holes
@@ -214,9 +226,9 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			
 			sleep 1
 		)
-	)--end action
-	
-	on but_SWITCH1 pressed do
+	)
+
+	fn generateSoma Meshes =
 	(
 		for i = 1 to Meshes.count do
 		(
@@ -233,7 +245,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 		
 			addDisplace  mesh 0.01		-- Apply Displacement
-			SetObjectRotation mesh 	-- Apply Random Rotation
+			SetObjectRotation mesh 		-- Apply Random Rotation
 			SetObjectScale mesh 		-- Apply Random Scaling
 		
 
@@ -245,9 +257,9 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			
 			--sleep 1
 		)
-	)--end action
-	
-	on but_SWITCH2 pressed do
+	)
+
+	fn generateSynapse Meshes = 
 	(
 		for i = 1 to Meshes.count do
 		(
@@ -277,9 +289,9 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			
 			--sleep 1
 		)
-	)--end action
-	
-	on but_SWITCH3 pressed do
+	)
+
+	fn toggleModifiers Meshes = 
 	(
 		for i = 1 to Meshes.count do
 		(
@@ -303,17 +315,40 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 				
 				print mod.enabled as String
 			)
-		
-			--ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 			
 			print ("Mesh Complete")
 			print "\n"
 			
 			--sleep 1
 		)
-	)--end action
+	)
+
+	on button1 pressed do -- Make Selection
+	(
+		makeSelection()
+	)
 	
-)-- end rollout
+	on button2 pressed do -- Process Meshes
+	(
+		ProcessMeshes(Selection)
+	)
+	
+	on button3 pressed do -- Generate Soma
+	(
+		generateSoma(Selection)
+	)
+	
+	on button4 pressed do -- Generate Synapse
+	(
+		generateSynapse(Selection)	
+	)
+	
+	on button5 pressed do
+	(
+		toggleModifiers(Selection)	
+	)
+	
+) -- end rollout
 
 createDialog NeuroMesh 200 475
 
