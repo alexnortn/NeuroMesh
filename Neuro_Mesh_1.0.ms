@@ -21,7 +21,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 	label lab1 "Neuro Mesh 1.0" offset:[0,50]
 	label lab2 "2016 Alex Norton"
 	
-	Global Selection -- Selection Array
+	Global Meshes -- Meshes Array
 
 	fn makeSelection = 
 	(
@@ -29,10 +29,10 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			then messagebox "Please select some meshes first." -- checks that 1 or more meshes are currently selected
 		else
 		(
-			Selection = selection as array -- places the currently selected objects in an array when pressed
-			local s = Selection.count as String
+			Meshes = selection as array -- places the currently selected objects in an array when pressed
+			local s = Meshes.count as String
 
-			print ("Selection contains: " + s + " meshes.")
+			print ("Meshes contains: " + s + " meshes.")
 		)
 	)
 	
@@ -194,7 +194,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 	
-		nTurboSmooth mesh 2 -- Apply TurboSmooth (2)
+		nTurboSmooth mesh 1 -- Apply TurboSmooth (2)
 		nRelax mesh 1		-- Apply Relax (1)
 		
 		polyop.capHolesByEdge mesh #all 	-- Cap Holes
@@ -207,7 +207,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		
 		sleep 1
 		
-		nProOptimizer mesh 10		-- Apply ProOptimizer (10%)
+		nProOptimizer mesh 50		-- Apply ProOptimizer (10%)
 		runProOptimizer mesh 		-- Run Optimization
 
 		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
@@ -265,8 +265,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 	struct runProcess
 	(
-
-		monitorProgress =#(),
+-- 		monitorProgress = #(),
 		Meshes,
 		method,
 
@@ -292,33 +291,33 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		)
 	)
 
-	on button1 pressed do -- Make Selection
+	on button1 pressed do -- Make Meshes
 	(
 		makeSelection()
 	)
 	
 	on button2 pressed do -- Process Meshes
 	(
-		bioStruct = runProcess(Selection, bioize)
-		bioStruct.run() -- Run bioize on Selection
+		bioStruct = runProcess Meshes bioize
+		bioStruct.run() -- Run bioize on Meshes
 	)
 	
 	on button3 pressed do -- Generate Soma
 	(
-		somaStruct = runProcess(Selection, generateSoma)
-		somaStruct.run() -- Run generateSoma on Selection
+		somaStruct = runProcess Meshes generateSoma
+		somaStruct.run() -- Run generateSoma on Meshes
 	)
 	
 	on button4 pressed do -- Generate Synapse
 	(
-		synapseStruct = runProcess(Selection, generateSynapse)
-		synapseStruct.run() -- Run generateSynapse on Selection
+		synapseStruct = runProcess Meshes generateSynapse
+		synapseStruct.run() -- Run generateSynapse on Meshes
 	)
 	
 	on button5 pressed do -- Toggle Modifiers
 	(
-		toggleStruct = runProcess(Selection, toggleModifier)
-		toggleStruct.run() -- Run toggleModifier on Selection
+		toggleStruct = runProcess Meshes toggleModifier
+		toggleStruct.run() -- Run toggleModifier on Meshes
 	)
 	
 ) -- end rollout
