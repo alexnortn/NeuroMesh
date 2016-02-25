@@ -147,6 +147,13 @@ fn bioize mesh =
 
 	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 
+	sleep 5
+
+	nProOptimizer mesh 25		-- Apply ProOptimizer (initial compression)
+	runProOptimizer mesh 		-- Run Optimization
+
+	sleep 5
+
 	nTurboSmooth mesh 1 -- Apply TurboSmooth (2 skeleton) (1 volumetric)
 -- 	nRelax mesh 0		-- Apply Relax (1 skeleton) (0 volumetric)
 
@@ -160,12 +167,14 @@ fn bioize mesh =
 	
 	sleep 1
 	
-	nProOptimizer mesh 10		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
+	nProOptimizer mesh 35		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
 	runProOptimizer mesh 		-- Run Optimization
 
-	sleep 1
+	sleep 5
 
 	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+
+	sleep 1
 
 	nNormalizer mesh      		-- Unify Normals
 	collapseStack mesh 			-- Collapse Stack
