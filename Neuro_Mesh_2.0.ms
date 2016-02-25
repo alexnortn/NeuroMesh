@@ -35,6 +35,26 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 			print ("Meshes contains: " + s + " meshes.")
 		)
 	)
+
+	fn nNormalizer obj = 
+	(
+		/*
+			The Normal modifier allows you to unify or flip the normals of 
+			an object without applying an Edit Mesh modifier.
+		*/
+
+		print "Applying Normal Modifier.."
+
+		local normalMod = normalModifier()	-- Delcare modifier
+		normalMod.unify = true		-- Set attributes
+		normalMod.flip  = true	
+		
+		addModifier obj normalMod 	-- Apply modifier
+
+
+		print "Complete."
+
+	)
 	
 	fn nTurboSmooth obj itr =
 	(
@@ -200,8 +220,8 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 -- 		polyop.capHolesByEdge mesh #all 	-- Cap Holes
 -- 		polyop.capHolesByFace mesh #all 	-- Cap Holes
 -- 		polyop.capHolesByVert mesh #all 	-- Cap Holes
-	
-			sleep 1
+		
+		sleep 1
 
 		collapseStack mesh -- Collapse Stack
 		
@@ -210,7 +230,12 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		nProOptimizer mesh 10		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
 		runProOptimizer mesh 		-- Run Optimization
 
+		sleep 1
+
 		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+
+		nNormalizer mesh      		-- Unify Normals
+		collapseStack mesh -- Collapse Stack
 		
 		sleep 1
 	)
