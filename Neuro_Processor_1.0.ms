@@ -1,5 +1,5 @@
 -- Load some meshes to be processed
-global meshes = getFiles "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\test\\*.obj"
+global meshes = getFiles "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\test\\cells\\*.obj"
 
 global baseDirectory = "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\test"
 global outputDirectory = baseDirectory + "\\output"
@@ -28,9 +28,12 @@ makeDirectory()
  )
 
 fn processMesh = (
+	print "Beginning Mesh Processing..\n"
 	for mesh in meshes do 
 	(
 		#noPrompt -- why not
+		local meshName = getFilenameFile mesh as string
+	 	print ("Importing " + meshName)
 
 		dialogMonitorOps.enabled = true
 		dialogMonitorOps.unRegisterNotification id:#test
@@ -39,24 +42,25 @@ fn processMesh = (
 	    importFile mesh #noPrompt -- your code here
 	 	dialogMonitorOps.enabled = false
 
-	 	local meshName = getFilenameFile mesh as string
-
 		-- Set the name of the current import
 		local activeMesh = getNodeByName "default"
-			  activeMesh.name = meshName
-
-	  	-- Process Mesh
-	  	select activeMesh 
+		
+		-- Process Mesh
+	  	select activeMesh
+		activeMesh.name = meshName
 
 	  	-- Export Meshes
 	  	print ("Exporting " + activeMesh.name + "..")
-	  	exportFile outputDirectory + "\\" + activeMesh.name + ".obj" #noPrompt selectedOnly:true using:OBJEXP
-	  	print "Success"
+	  	local meshExport = outputDirectory + "\\" + activeMesh.name + ".obj"
+	  	exportFile meshExport #noPrompt selectedOnly:true using:OBJEXP
+	  	print "Success \n"
 
 	  	-- Delete activeMesh + End Selection
 	  	max delete
 	  	max select none
 	)
+
+	print "Mesh Processing Complete."
 )
 
 processMesh()
