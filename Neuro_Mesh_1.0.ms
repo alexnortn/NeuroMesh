@@ -93,7 +93,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		obj.modifiers[#ProOptimizer].Calculate = True -- Run optimization
 	)
 
-	fn nRelax obj itr =
+	fn nRelax obj val =
 	(
 		/*
 			The Relax modifier changes the apparent surface tension in a mesh
@@ -111,8 +111,8 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		local relaxModifier = Relax() 		-- Delcare modifier
 
-		relaxModifier.iterations = itr 		-- Set attributes
-		relaxModifier.Relax_Value = 0.5		-- Set attributes
+		relaxModifier.iterations = 1 		-- Set attributes
+		relaxModifier.Relax_Value = val		-- Set attributes
 		
 		addModifier obj relaxModifier 		-- Apply modifier
 
@@ -194,12 +194,12 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 	
-		nTurboSmooth mesh 1 -- Apply TurboSmooth (2)
-		nRelax mesh 1		-- Apply Relax (1)
+		nTurboSmooth mesh 1 -- Apply TurboSmooth (2 skeleton) (1 volumetric)
+-- 		nRelax mesh 0		-- Apply Relax (1 skeleton) (0 volumetric)
 		
-		polyop.capHolesByEdge mesh #all 	-- Cap Holes
-		polyop.capHolesByFace mesh #all 	-- Cap Holes
-		polyop.capHolesByVert mesh #all 	-- Cap Holes
+-- 		polyop.capHolesByEdge mesh #all 	-- Cap Holes
+-- 		polyop.capHolesByFace mesh #all 	-- Cap Holes
+-- 		polyop.capHolesByVert mesh #all 	-- Cap Holes
 		
 		sleep 1
 
@@ -207,7 +207,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		
 		sleep 1
 		
-		nProOptimizer mesh 50		-- Apply ProOptimizer (10%)
+		nProOptimizer mesh 10		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
 		runProOptimizer mesh 		-- Run Optimization
 
 		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
