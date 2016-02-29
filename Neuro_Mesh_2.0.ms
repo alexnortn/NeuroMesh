@@ -102,6 +102,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		ProOptModifier.OptimizationMode = 1 	-- (0) Crunch Borders (1) Protect Borders (2) Exclude Borders 
 		ProOptModifier.VertexPercent = prcnt 	-- Reduce mesh to 10% original vertex
+		ProOptModifier.MergeFaces = true 		-- Get/set the state of the Merge Faces option
 		
 		addModifier obj ProOptModifier 		-- Apply modifier
 
@@ -235,7 +236,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 
 		nNormalizer mesh      		-- Unify Normals
-		collapseStack mesh -- Collapse Stack
+		collapseStack mesh 			-- Collapse Stack
 		
 		sleep 1
 	)

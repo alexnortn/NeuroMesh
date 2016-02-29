@@ -8,9 +8,10 @@
 
 
 -- Load some meshes to be processed
-global Meshes = getFiles "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\test\\cells\\*.obj"
+global Meshes = getFiles "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\ooDSGC_HiRes\\*.obj"
 
-global baseDirectory = "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\test"
+-- global baseDirectory = "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\test"
+global baseDirectory = "\\\\POSEIDON\\Users\\Public\\TFF Cells\\ooDSGC"
 global outputDirectory = baseDirectory + "\\output"
 
 
