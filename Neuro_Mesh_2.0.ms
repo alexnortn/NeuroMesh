@@ -102,7 +102,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		ProOptModifier.OptimizationMode = 1 	-- (0) Crunch Borders (1) Protect Borders (2) Exclude Borders 
 		ProOptModifier.VertexPercent = prcnt 	-- Reduce mesh to 10% original vertex
-		ProOptModifier.MergeFaces = true 		-- Get/set the state of the Merge Faces option
+-- 		ProOptModifier.MergeFaces = true 		-- Get/set the state of the Merge Faces option
 		
 		addModifier obj ProOptModifier 		-- Apply modifier
 
@@ -222,23 +222,21 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 -- 		polyop.capHolesByFace mesh #all 	-- Cap Holes
 -- 		polyop.capHolesByVert mesh #all 	-- Cap Holes
 		
-		sleep 1
+		--sleep 1
 
-		collapseStack mesh -- Collapse Stack
+		--collapseStack mesh -- Collapse Stack
 		
-		sleep 1
+		--sleep 1
 		
 		nProOptimizer mesh 10		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
 		runProOptimizer mesh 		-- Run Optimization
 
-		sleep 1
-
-		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+		--sleep 1
 
 		nNormalizer mesh      		-- Unify Normals
-		collapseStack mesh 			-- Collapse Stack
+		--collapseStack mesh 			-- Collapse Stack
 		
-		sleep 1
+		--sleep 1
 	)
 
 	fn generateSoma mesh =
