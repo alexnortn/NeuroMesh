@@ -9,13 +9,13 @@
 
 -- Load some meshes to be processed
 -- global Meshes = getFiles "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\ooDSGC_HiRes\\*.obj"
-global Meshes = getFiles "I:\\TFF Cells\\MuseumCells\\test\\cells\\*.obj"
+global Meshes = getFiles "I:\\TFF Cells\\MuseumCells\\HiRes\\Circuit\\*.obj"
 
 
 -- global baseDirectory = "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\test"
 -- global baseDirectory = "\\\\POSEIDON\\Users\\Public\\TFF Cells\\ooDSGC"
-global baseDirectory = "I:\\TFF Cells\\MuseumCells\\test"
-global outputDirectory = baseDirectory + "\\output"
+global baseDirectory = "E:\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells"
+global outputDirectory = baseDirectory + "\\Circuit"
 
 
 -- Make directory for iterative processing
@@ -52,7 +52,7 @@ fn nNormalizer obj =
 
 	local normalMod = normalModifier()	-- Delcare modifier
 	normalMod.unify = true		-- Set attributes
-	normalMod.flip  = true	
+	normalMod.flip  = false	
 	
 	addModifier obj normalMod 	-- Apply modifier
 
@@ -145,44 +145,40 @@ fn nRelax obj val =
 	print "Complete."
 )
 
-fn bioize mesh  percent = 
-(
-	select mesh -- Select working object
-
-	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
-
-	nProOptimizer mesh 25		-- Apply ProOptimizer (initial compression)
-	runProOptimizer mesh 		-- Run Optimization
-
-	nTurboSmooth mesh 1 -- Apply TurboSmooth (2 skeleton) (1 volumetric)
--- 	nRelax mesh 0		-- Apply Relax (1 skeleton) (0 volumetric)
-
--- 	polyop.capHolesByEdge mesh #all 	-- Cap Holes
--- 	polyop.capHolesByFace mesh #all 	-- Cap Holes
--- 	polyop.capHolesByVert mesh #all 	-- Cap Holes
-
-	collapseStack mesh -- Collapse Stack
-	
-	nProOptimizer mesh percent	-- Apply ProOptimizer (10% skeleton) (50% volumetric)
-	runProOptimizer mesh 		-- Run Optimization
-
-	nNormalizer mesh      		-- Unify Normals
-)
-
 fn bioize mesh = 
 (
 	select mesh -- Select working object
 
 	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 
-	nProOptimizer mesh 25		-- Apply ProOptimizer (initial compression)
+	nProOptimizer mesh 25		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
 	runProOptimizer mesh 		-- Run Optimization
 
+	sleep 5
+
 	nTurboSmooth mesh 1 -- Apply TurboSmooth (2 skeleton) (1 volumetric)
+-- 		nRelax mesh 0		-- Apply Relax (1 skeleton) (0 volumetric)
+	
+-- 		polyop.capHolesByEdge mesh #all 	-- Cap Holes
+-- 		polyop.capHolesByFace mesh #all 	-- Cap Holes
+-- 		polyop.capHolesByVert mesh #all 	-- Cap Holes
+	
+	sleep 5
 
-	nNormalizer mesh     
+	--collapseStack mesh -- Collapse Stack
+	
+	--sleep 1
+	
+	--nProOptimizer mesh 25		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
+	--runProOptimizer mesh 		-- Run Optimization
 
-	collapseStack mesh -- Collapse Stack
+	sleep 1
+
+	nNormalizer mesh      		-- Unify Normals
+	
+	collapseStack mesh 			-- Collapse Stack
+	
+	--sleep 1
 )
 
 fn optimizeMesh1 mesh percent = 
@@ -191,6 +187,8 @@ fn optimizeMesh1 mesh percent =
 
 	nProOptimizer mesh percent		-- Apply ProOptimizer (initial compression)
 	runProOptimizer mesh 		-- Run Optimization
+
+	sleep 3
 )
 
 fn optimizeMesh2 mesh percent = 
@@ -205,6 +203,8 @@ fn optimizeMesh2 mesh percent =
 
 	nProOptimizer mesh percent		-- Apply ProOptimizer (initial compression)
 	runProOptimizer mesh 		-- Run Optimization
+
+	sleep 3
 )
 
 
@@ -293,29 +293,42 @@ fn processMesh =
 	  	select activeMesh
 		activeMesh.name = meshName
 
+		sleep 1
 
 		bioStruct = runProcess activeMesh bioize i -- Decimate mesh to 10% original
 		bioStruct.run() -- Run bioize on Meshes
+
+		sleep 1
 
 		optimizeMesh1 activeMesh 5
 		local meshExpName = activeMesh.name + "_5"
 		exportMesh meshExpName
 
+		sleep 1
+
 		optimizeMesh2 activeMesh 10
 		local meshExpName = activeMesh.name + "_10"
 		exportMesh meshExpName
+
+		sleep 1
 
 		optimizeMesh2 activeMesh 15
 		local meshExpName = activeMesh.name + "_15"
 		exportMesh meshExpName
 
+		sleep 1
+
 		optimizeMesh2 activeMesh 25
 		local meshExpName = activeMesh.name + "_25"
 		exportMesh meshExpName
 
+		sleep 1
+
 		optimizeMesh2 activeMesh 50
 		local meshExpName = activeMesh.name + "_50"
 		exportMesh meshExpName
+
+		sleep 1
 
 	  	-- Delete activeMesh + End Selection
 	  	max delete

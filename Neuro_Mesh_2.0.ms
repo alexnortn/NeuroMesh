@@ -47,7 +47,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		local normalMod = normalModifier()	-- Delcare modifier
 		normalMod.unify = true		-- Set attributes
-		normalMod.flip  = true	
+		normalMod.flip  = false	
 		
 		addModifier obj normalMod 	-- Apply modifier
 
@@ -214,6 +214,11 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 		select mesh -- Select working object
 
 		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+
+		nProOptimizer mesh 25		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
+		runProOptimizer mesh 		-- Run Optimization
+
+		sleep 5
 	
 		nTurboSmooth mesh 1 -- Apply TurboSmooth (2 skeleton) (1 volumetric)
 -- 		nRelax mesh 0		-- Apply Relax (1 skeleton) (0 volumetric)
@@ -222,19 +227,20 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 -- 		polyop.capHolesByFace mesh #all 	-- Cap Holes
 -- 		polyop.capHolesByVert mesh #all 	-- Cap Holes
 		
-		--sleep 1
+		sleep 5
 
 		--collapseStack mesh -- Collapse Stack
 		
 		--sleep 1
 		
-		nProOptimizer mesh 10		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
+		nProOptimizer mesh 25		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
 		runProOptimizer mesh 		-- Run Optimization
 
-		--sleep 1
+		sleep 1
 
 		nNormalizer mesh      		-- Unify Normals
-		--collapseStack mesh 			-- Collapse Stack
+		
+		collapseStack mesh 			-- Collapse Stack
 		
 		--sleep 1
 	)
