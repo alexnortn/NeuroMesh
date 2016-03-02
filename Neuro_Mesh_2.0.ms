@@ -47,7 +47,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		local normalMod = normalModifier()	-- Delcare modifier
 		normalMod.unify = true		-- Set attributes
-		normalMod.flip  = false	
+		normalMod.flip  = true	
 		
 		addModifier obj normalMod 	-- Apply modifier
 
@@ -111,7 +111,9 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 	
 	fn runProOptimizer obj = 
 	(
+		print "Running ProOptimizer Modifier.."
 		obj.modifiers[#ProOptimizer].Calculate = True -- Run optimization
+		print "Complete."
 	)
 
 	fn nRelax obj val =
@@ -215,6 +217,12 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 
+		sleep 3
+
+		nNormalizer mesh      		-- Unify Normals
+
+		sleep 1
+
 		nProOptimizer mesh 25		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
 		runProOptimizer mesh 		-- Run Optimization
 
@@ -240,9 +248,7 @@ rollout NeuroMesh "Select Meshes" -- labels rollout
 
 		nNormalizer mesh      		-- Unify Normals
 		
-		collapseStack mesh 			-- Collapse Stack
-		
-		--sleep 1
+		ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 	)
 
 	fn generateSoma mesh =

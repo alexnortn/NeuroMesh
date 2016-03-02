@@ -9,19 +9,18 @@
 
 -- Load some meshes to be processed
 -- global Meshes = getFiles "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\ooDSGC_HiRes\\*.obj"
-global Meshes = getFiles "I:\\TFF Cells\\MuseumCells\\HiRes\\Circuit\\*.obj"
+global meshFileNames = getFiles "I:\\TFF Cells\\MuseumCells\\HiRes\\SAC\\*.obj"
 
 
 -- global baseDirectory = "\\\\Notus\\Users\\Public\\3dsMax\\Eyewire-Cells\\MuseumCells\\test"
 -- global baseDirectory = "\\\\POSEIDON\\Users\\Public\\TFF Cells\\ooDSGC"
 global baseDirectory = "E:\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells"
-global outputDirectory = baseDirectory + "\\Circuit"
+global outputDirectory = baseDirectory + "\\SAC"
 
 
 -- Make directory for iterative processing
-fn makeDirectory = 
-(
-	iterations = GetDirectories(baseDirectory+"/*")
+fn makeDirectory = (
+	iterations = GetDirectories(baseDirectory + "/*")
 	iterations = iterations.count + 1
 	iterations = iterations as string
 
@@ -41,8 +40,7 @@ makeDirectory()
 
 
 
-fn nNormalizer obj = 
-(
+fn nNormalizer obj = (
 	/*
 		The Normal modifier allows you to unify or flip the normals of 
 		an object without applying an Edit Mesh modifier.
@@ -50,19 +48,16 @@ fn nNormalizer obj =
 
 	print "Applying Normal Modifier.."
 
-	local normalMod = normalModifier()	-- Delcare modifier
+	local normalMod = normalModifier()	-- Declare modifier
 	normalMod.unify = true		-- Set attributes
-	normalMod.flip  = false	
+	normalMod.flip  = true	
 	
 	addModifier obj normalMod 	-- Apply modifier
 
-
 	print "Complete."
-
 )
 
-fn nTurboSmooth obj itr =
-(
+fn nTurboSmooth obj itr = (
 	/*
 		TurboSmooth lets you subdivide the geometry while interpolating
 		the angles of new faces at corners and edges, and apply a
@@ -88,8 +83,7 @@ fn nTurboSmooth obj itr =
 	print "Complete."
 )
 
-fn nProOptimizer obj prcnt =
-(
+fn nProOptimizer obj prcnt = (
 	/*
 		The ProOptimizer feature is an optimization tool that helps you 
 		reduce the number of vertices (and so the number of faces) in 
@@ -113,13 +107,16 @@ fn nProOptimizer obj prcnt =
 	print "Complete."
 )
 
-fn runProOptimizer obj = 
-(
+fn runProOptimizer obj = (
+	print "Running ProOptimizer Modifier.."
+
 	obj.modifiers[#ProOptimizer].Calculate = True -- Run optimization
+-- 	sleep 3
+
+	print "Complete."
 )
 
-fn nRelax obj val =
-(
+fn nRelax obj val = (
 	/*
 		The Relax modifier changes the apparent surface tension in a mesh
 		by moving vertices closer to, or away from, their neighbors. 
@@ -145,71 +142,38 @@ fn nRelax obj val =
 	print "Complete."
 )
 
-fn bioize mesh = 
-(
+fn bioize mesh = (
 	select mesh -- Select working object
 
 	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+	--nNormalizer mesh      		-- Unify Normals
 
 	nProOptimizer mesh 25		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
 	runProOptimizer mesh 		-- Run Optimization
 
-	sleep 5
-
 	nTurboSmooth mesh 1 -- Apply TurboSmooth (2 skeleton) (1 volumetric)
--- 		nRelax mesh 0		-- Apply Relax (1 skeleton) (0 volumetric)
-	
--- 		polyop.capHolesByEdge mesh #all 	-- Cap Holes
--- 		polyop.capHolesByFace mesh #all 	-- Cap Holes
--- 		polyop.capHolesByVert mesh #all 	-- Cap Holes
-	
-	sleep 5
-
-	--collapseStack mesh -- Collapse Stack
-	
-	--sleep 1
-	
-	--nProOptimizer mesh 25		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
-	--runProOptimizer mesh 		-- Run Optimization
-
-	sleep 1
-
 	nNormalizer mesh      		-- Unify Normals
 	
-	collapseStack mesh 			-- Collapse Stack
-	
-	--sleep 1
+	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 )
 
-fn optimizeMesh1 mesh percent = 
-(
-	select mesh -- Select working object
-
-	nProOptimizer mesh percent		-- Apply ProOptimizer (initial compression)
-	runProOptimizer mesh 		-- Run Optimization
-
-	sleep 3
-)
-
-fn optimizeMesh2 mesh percent = 
-(
+fn optimizeMesh mesh percent = (
 	select mesh -- Select working object
 
 	for m in mesh.modifiers do
 	(
 		print m
+		print "Removing previous Optimization"
 		if classOf m==ProOptimizer do deleteModifier mesh m
 	)
 
+	print "Adding addtional Optimization"
+
 	nProOptimizer mesh percent		-- Apply ProOptimizer (initial compression)
 	runProOptimizer mesh 		-- Run Optimization
-
-	sleep 3
 )
 
-
-struct runProcess
-(
+struct runProcess (
 -- 		monitorProgress = #(),
 	mesh,
 	method,
@@ -220,7 +184,7 @@ struct runProcess
 		select mesh -- Select working object
 
 		index = i as String
-		mesh_count = Meshes.count as String
+		mesh_count = meshFileNames.count as String
 		mesh_id = mesh as String
 	
 		print ("Starting Mesh: " + mesh_id + "\n number:" + index + "|" + mesh_count)
@@ -233,8 +197,7 @@ struct runProcess
 )
 
 -- Avoid pesky dialog pop-ups
-fn checkDialog = 
-(
+fn checkDialog = (
 	local hwnd = dialogMonitorOps.getWindowHandle()
 	if (uiAccessor.getWindowText hwnd == "Import Name Conflict") then (
 		uiAccessor.PressButtonByName hwnd "OK"
@@ -243,8 +206,7 @@ fn checkDialog =
 )
 
 -- Disable dialog pop-ups
-fn impOptions = 
-(
+fn impOptions = (
  	#noPrompt -- why not
 
  	dialogMonitorOps.enabled = true
@@ -260,82 +222,83 @@ fn impOptions =
 	#noprompt
 )
 
-fn exportMesh meshName =
-(
-	-- Export Meshes
+fn exportMesh meshName = (
+	-- Export meshFileNames
   	print ("Exporting " + meshName + "..")
   	local meshExport = outputDirectory + "\\" + meshName + ".obj"
   	exportFile meshExport #noPrompt selectedOnly:true using:OBJEXP
   	print "Success \n"
 )
 
-fn processMesh = 
-(
+fn processMesh mesh = (
 
+	local meshName = getFilenameFile mesh as string
+ 	print ("Importing " + meshName)
+
+ 	-- Import Mesh
+    importFile mesh #noPrompt
+
+	-- Set the name of the current import
+	-- Assume the current import name <default>
+	local activeMesh = getNodeByName "default"
+	
+	-- Process Mesh
+  	select activeMesh
+	activeMesh.name = meshName
+
+	bioStruct = runProcess activeMesh bioize i -- Decimate mesh to 10% original
+	bioStruct.run() -- Run bioize on Meshes
+
+	-- Export meshes at different mip levels
+	for i = 1 to 5 do (
+		local decimationFactor
+
+		if i == 1  then
+			decimationFactor = 5
+		else if i == 2 then
+			decimationFactor = 10
+		else if i == 3 then
+			decimationFactor = 15
+		else if i == 4 then
+			decimationFactor = 25
+		else if i == 5 then
+			decimationFactor = 50
+
+		optimizeMesh activeMesh decimationFactor -- Optimize mesh at different mip levels
+
+		decimationFactor = decimationFactor as string
+
+		local meshExpName = activeMesh.name + "_" + decimationFactor
+		exportMesh meshExpName
+	)
+
+  	-- Delete activeMesh + End Selection
+  	max delete
+  	max select none
+
+  	-- Run garbage collection
+  	print "Running garbage collection.."
+  	gc()
+)
+
+fn loopMesh = (
 	print "Beginning Mesh Processing..\n"
 	options() -- Import settings
 
-	for i = 1 to Meshes.count do
-	(
-		mesh = Meshes[i]
+	for i = 1 to meshFileNames.count do (
+		local mesh = meshFileNames[i]
 
-		local meshName = getFilenameFile mesh as string
-	 	print ("Importing " + meshName)
+		processMesh mesh
 
-	 	-- Import Mesh
-	    importFile mesh #noPrompt
+		-- Run garbage collection
+		print "Running garbage collection.."
+		gc()
 
-		-- Set the name of the current import
-		-- Assume the current import name <default>
-		local activeMesh = getNodeByName "default"
-		
-		-- Process Mesh
-	  	select activeMesh
-		activeMesh.name = meshName
-
-		sleep 1
-
-		bioStruct = runProcess activeMesh bioize i -- Decimate mesh to 10% original
-		bioStruct.run() -- Run bioize on Meshes
-
-		sleep 1
-
-		optimizeMesh1 activeMesh 5
-		local meshExpName = activeMesh.name + "_5"
-		exportMesh meshExpName
-
-		sleep 1
-
-		optimizeMesh2 activeMesh 10
-		local meshExpName = activeMesh.name + "_10"
-		exportMesh meshExpName
-
-		sleep 1
-
-		optimizeMesh2 activeMesh 15
-		local meshExpName = activeMesh.name + "_15"
-		exportMesh meshExpName
-
-		sleep 1
-
-		optimizeMesh2 activeMesh 25
-		local meshExpName = activeMesh.name + "_25"
-		exportMesh meshExpName
-
-		sleep 1
-
-		optimizeMesh2 activeMesh 50
-		local meshExpName = activeMesh.name + "_50"
-		exportMesh meshExpName
-
-		sleep 1
-
-	  	-- Delete activeMesh + End Selection
-	  	max delete
-	  	max select none
 	)
 
 	print "Mesh Processing Complete."
+
 )
 
-processMesh()
+-- Call loopMesh()
+loopMesh()
