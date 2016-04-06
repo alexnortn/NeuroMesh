@@ -8,10 +8,10 @@
 
 
 -- Load some meshes to be processed
-global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Circuit\\lww-res-collection\\*.obj"
+global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Circuit\\hi-res\\*.obj"
 -- global meshFileNames = getFiles "I:\\Collection\\*.obj"
 global baseDirectory = "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Circuit"
-global outputDirectory = baseDirectory + "\\lww-res-collection"
+global outputDirectory = baseDirectory + "\\neuro_processor_2"
 
 
 -- Make directory for iterative processing
@@ -139,10 +139,10 @@ fn nRelax obj val = (
 fn bioize mesh = (
 	select mesh -- Select working object
 
-	nProOptimizer mesh 25		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
-	runProOptimizer mesh 		-- Run Optimization
+-- 	nProOptimizer mesh 25		-- Apply ProOptimizer (10% skeleton) (50% volumetric)
+-- 	runProOptimizer mesh 		-- Run Optimization
 
-	nTurboSmooth mesh 1 -- Apply TurboSmooth (2 skeleton) (1 volumetric)
+-- 	nTurboSmooth mesh 1 -- Apply TurboSmooth (2 skeleton) (1 volumetric)
 
 	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 	nNormalizer mesh      		-- Unify Normals
@@ -225,10 +225,10 @@ fn exportMesh meshName = (
 
 fn processMesh mesh = (
 
-	makeDirectory()
-
 	local meshName = getFilenameFile mesh as string
  	print ("Importing " + meshName)
+
+ 	impOptions()
 
  	-- Import Mesh
     importFile mesh #noPrompt
@@ -245,21 +245,21 @@ fn processMesh mesh = (
 	bioStruct.run() -- Run bioize on Meshes
 
 	-- Export meshes at different mip levels
-	for i = 1 to 1 do (  -- Changed to 1 to only downsample first mip level
+	for i = 1 to 4 do (  -- Changed to 1 to only downsample first mip level
 		local decimationFactor
 
 		if i == 1  then
-			decimationFactor = 1 -- Default 5
+			decimationFactor = 5 -- Default 5
 		else if i == 2 then
-			decimationFactor = 5
-		else if i == 3 then
 			decimationFactor = 10
-		else if i == 4 then
+		else if i == 3 then
 			decimationFactor = 15
-		else if i == 5 then
+		else if i == 4 then
 			decimationFactor = 25
-		else if i == 6 then
+		else if i == 5 then
 			decimationFactor = 50
+		else if i == 6 then
+			decimationFactor = 75
 
 		optimizeMesh activeMesh decimationFactor -- Optimize mesh at different mip levels
 
@@ -299,15 +299,14 @@ fn importMesh mesh = (
 
 fn loopMesh = (
 	print "Beginning Mesh Processing..\n"
-	options() -- Import settings
+
+	makeDirectory()
 
 	for i = 1 to meshFileNames.count do (
 		local mesh = meshFileNames[i]
 
--- 		impOptions()
-
--- 		processMesh mesh
-		importMesh mesh
+		processMesh mesh
+-- 		importMesh mesh
 
 		-- Run garbage collection
 		print "Running garbage collection.."
