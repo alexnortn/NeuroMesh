@@ -1,0 +1,73 @@
+<!DOCTYPE FilterScript>
+<FilterScript>
+ <filter name="Compute Vertex Normals">
+  <Param enum_cardinality="4" name="weightMode" enum_val0="None (avg)" enum_val1="By Angle" enum_val2="By Area" enum_val3="As defined by N. Max" description="Weighting Mode:" tooltip="" value="0" type="RichEnum"/>
+ </filter>
+ <filter name="Ambient Occlusion - Per Vertex">
+  <Param name="dirBias" description="Directional Bias [0..1]" tooltip="The balance between a uniform and a directionally biased set of lighting direction&lt;br>: - 0 means light came only uniformly from any direction&lt;br> - 1 means that all the light cames from the specified cone of directions &lt;br> - other values mix the two set of lighting directions " value="0" type="RichFloat"/>
+  <Param name="reqViews" description="Requested views" tooltip="Number of different views uniformly placed around the mesh. More views means better accuracy at the cost of increased calculation time" value="128" type="RichInt"/>
+  <Param y="1" z="0" name="coneDir" description="Lighting Direction" tooltip="Number of different views placed around the mesh. More views means better accuracy at the cost of increased calculation time" type="RichPoint3f" x="0"/>
+  <Param name="coneAngle" description="Cone amplitude" tooltip="Number of different views uniformly placed around the mesh. More views means better accuracy at the cost of increased calculation time" value="30" type="RichFloat"/>
+  <Param name="useGPU" description="Use GPU acceleration" tooltip="In order to use GPU-Mode, your hardware must support FBOs, FP32 Textures and Shaders. Normally increases the performance by a factor of 4x-5x" value="true" type="RichBool"/>
+  <Param name="useVBO" description="Use VBO if supported" tooltip="By using VBO, Meshlab loads all the vertex structure in the VRam, greatly increasing rendering speed (for both CPU and GPU mode). Disable it if problem occurs" value="true" type="RichBool"/>
+  <Param name="depthTexSize" description="Depth texture size(should be 2^n)" tooltip="Defines the depth texture size used to compute occlusion from each point of view. Higher values means better accuracy usually with low impact on performance" value="512" type="RichInt"/>
+ </filter>
+ <filter name="Select Faces by Vertex Quality">
+  <Param min="0" max="0.257472" name="minQ" description="Min Quality" tooltip="Minimum acceptable quality value" value="0" type="RichDynamicFloat"/>
+  <Param min="0" max="0.257472" name="maxQ" description="Max Quality" tooltip="Maximum acceptable quality value" value="0.001" type="RichDynamicFloat"/>
+  <Param name="Inclusive" description="Inclusive Sel." tooltip="If true only the faces with &lt;b>all&lt;/b> the vertices within the specified range are selected. Otherwise any face with at least one vertex within the range is selected." value="true" type="RichBool"/>
+ </filter>
+ <filter name="Delete Selected Faces and Vertices"/>
+ <filter name="Merge Close Vertices">
+  <Param min="0" max="3625.33" name="Threshold" description="Merging distance" tooltip="All the vertices that closer than this threshold are merged together. Use very small values, default values is 1/10000 of bounding box diagonal. " value="36.253" type="RichAbsPerc"/>
+ </filter>
+ <filter name="Quadric Edge Collapse Decimation">
+  <Param name="TargetFaceNum" description="Target number of faces" tooltip="The desired final number of faces." value="773830" type="RichInt"/>
+  <Param name="TargetPerc" description="Percentage reduction (0..1)" tooltip="If non zero, this parameter specifies the desired final size of the mesh as a percentage of the initial size." value="0.2" type="RichFloat"/>
+  <Param name="QualityThr" description="Quality threshold" tooltip="Quality threshold for penalizing bad shaped faces.&lt;br>The value is in the range [0..1]&#xa; 0 accept any kind of face (no penalties),&#xa; 0.5  penalize faces with quality &lt; 0.5, proportionally to their shape&#xa;" value="1" type="RichFloat"/>
+  <Param name="PreserveBoundary" description="Preserve Boundary of the mesh" tooltip="The simplification process tries to do not affect mesh boundaries during simplification" value="false" type="RichBool"/>
+  <Param name="BoundaryWeight" description="Boundary Preserving Weight" tooltip="The importance of the boundary during simplification. Default (1.0) means that the boundary has the same importance of the rest. Values greater than 1.0 raise boundary importance and has the effect of removing less vertices on the border. Admitted range of values (0,+inf). " value="1" type="RichFloat"/>
+  <Param name="PreserveNormal" description="Preserve Normal" tooltip="Try to avoid face flipping effects and try to preserve the original orientation of the surface" value="true" type="RichBool"/>
+  <Param name="PreserveTopology" description="Preserve Topology" tooltip="Avoid all the collapses that should cause a topology change in the mesh (like closing holes, squeezing handles, etc). If checked the genus of the mesh should stay unchanged." value="true" type="RichBool"/>
+  <Param name="OptimalPlacement" description="Optimal position of simplified vertices" tooltip="Each collapsed vertex is placed in the position minimizing the quadric error.&#xa; It can fail (creating bad spikes) in case of very flat areas. &#xa;If disabled edges are collapsed onto one of the two original vertices and the final mesh is composed by a subset of the original vertices. " value="true" type="RichBool"/>
+  <Param name="PlanarQuadric" description="Planar Simplification" tooltip="Add additional simplification constraints that improves the quality of the simplification of the planar portion of the mesh." value="true" type="RichBool"/>
+  <Param name="QualityWeight" description="Weighted Simplification" tooltip="Use the Per-Vertex quality as a weighting factor for the simplification. The weight is used as a error amplification value, so a vertex with a high quality value will not be simplified and a portion of the mesh with low quality values will be aggressively simplified." value="true" type="RichBool"/>
+  <Param name="AutoClean" description="Post-simplification cleaning" tooltip="After the simplification an additional set of steps is performed to clean the mesh (unreferenced vertices, bad faces, etc)" value="true" type="RichBool"/>
+  <Param name="Selected" description="Simplify only selected faces" tooltip="The simplification is applied only to the selected set of faces.&#xa; Take care of the target number of faces!" value="false" type="RichBool"/>
+ </filter>
+ <filter name="Close Holes">
+  <Param name="MaxHoleSize" description="Max size to be closed " tooltip="The size is expressed as number of edges composing the hole boundary" value="30" type="RichInt"/>
+  <Param name="Selected" description="Close holes with selected faces" tooltip="Only the holes with at least one of the boundary faces selected are closed" value="false" type="RichBool"/>
+  <Param name="NewFaceSelected" description="Select the newly created faces" tooltip="After closing a hole the faces that have been created are left selected. Any previous selection is lost. Useful for example for smoothing the newly created holes." value="true" type="RichBool"/>
+  <Param name="SelfIntersection" description="Prevent creation of selfIntersecting faces" tooltip="When closing an holes it tries to prevent the creation of faces that intersect faces adjacent to the boundary of the hole. It is an heuristic, non intersetcting hole filling can be NP-complete." value="true" type="RichBool"/>
+ </filter>
+ <filter name="Uniform Mesh Resampling">
+  <Param min="0" max="362529" name="CellSize" description="Precision" tooltip="Size of the cell, the default is 1/50 of the box diag. Smaller cells give better precision at a higher computational cost. Remember that halving the cell size means that you build a volume 8 times larger." value="725.1" type="RichAbsPerc"/>
+  <Param min="-72505.7" max="72505.7" name="Offset" description="Offset" tooltip="Offset of the created surface (i.e. distance of the created surface from the original one).&lt;br>If offset is zero, the created surface passes on the original mesh itself. Values greater than zero mean an external surface, and lower than zero mean an internal surface.&lt;br> In practice this value is the threshold passed to the Marching Cube algorithm to extract the isosurface from the distance field representation." value="500" type="RichAbsPerc"/>
+  <Param name="mergeCloseVert" description="Clean Vertices" tooltip="If true the mesh generated by MC will be cleaned by unifying vertices that are almost coincident" value="false" type="RichBool"/>
+  <Param name="discretize" description="Discretize" tooltip="If true the position of the intersected edge of the marching cube grid is not computed by linear interpolation, but it is placed in fixed middle position. As a consequence the resampled object will look severely aliased by a stairstep appearance.&lt;br>Useful only for simulating the output of 3D printing devices." value="false" type="RichBool"/>
+  <Param name="multisample" description="Multisample" tooltip="If true the distance field is more accurately compute by multisampling the volume (7 sample for each voxel). Much slower but less artifacts." value="false" type="RichBool"/>
+  <Param name="absDist" description="Absolute Distance" tooltip="If true a &lt;b> not&lt;/b> signed distance field is computed. In this case you have to choose a not zero Offset and a double surface is built around the original surface, inside and outside. Is useful to convrt thin floating surfaces into &lt;i> solid, thick meshes.&lt;/i>. t" value="false" type="RichBool"/>
+ </filter>
+ <filter name="Remove Isolated pieces (wrt Diameter)">
+  <Param min="0" max="363563" name="MinComponentDiag" description="Enter max diameter of isolated pieces" tooltip="Delete all the connected components (floating pieces) with a diameter smaller than the specified one" value="36356.3" type="RichAbsPerc"/>
+ </filter>
+ <filter name="Close Holes">
+  <Param name="MaxHoleSize" description="Max size to be closed " tooltip="The size is expressed as number of edges composing the hole boundary" value="30" type="RichInt"/>
+  <Param name="Selected" description="Close holes with selected faces" tooltip="Only the holes with at least one of the boundary faces selected are closed" value="false" type="RichBool"/>
+  <Param name="NewFaceSelected" description="Select the newly created faces" tooltip="After closing a hole the faces that have been created are left selected. Any previous selection is lost. Useful for example for smoothing the newly created holes." value="true" type="RichBool"/>
+  <Param name="SelfIntersection" description="Prevent creation of selfIntersecting faces" tooltip="When closing an holes it tries to prevent the creation of faces that intersect faces adjacent to the boundary of the hole. It is an heuristic, non intersetcting hole filling can be NP-complete." value="true" type="RichBool"/>
+ </filter>
+ <filter name="Taubin Smooth">
+  <Param name="lambda" description="Lambda" tooltip="The lambda parameter of the Taubin Smoothing algorithm" value="0.5" type="RichFloat"/>
+  <Param name="mu" description="mu" tooltip="The mu parameter of the Taubin Smoothing algorithm" value="-0.4" type="RichFloat"/>
+  <Param name="stepSmoothNum" description="Smoothing steps" tooltip="The number of times that the taubin smoothing is iterated. Usually it requires a larger number of iteration than the classical laplacian" value="10" type="RichInt"/>
+  <Param name="Selected" description="Affect only selected faces" tooltip="If checked the filter is performed only on the selected faces" value="false" type="RichBool"/>
+ </filter>
+ <filter name="Close Holes">
+  <Param name="MaxHoleSize" description="Max size to be closed " tooltip="The size is expressed as number of edges composing the hole boundary" value="50" type="RichInt"/>
+  <Param name="Selected" description="Close holes with selected faces" tooltip="Only the holes with at least one of the boundary faces selected are closed" value="false" type="RichBool"/>
+  <Param name="NewFaceSelected" description="Select the newly created faces" tooltip="After closing a hole the faces that have been created are left selected. Any previous selection is lost. Useful for example for smoothing the newly created holes." value="true" type="RichBool"/>
+  <Param name="SelfIntersection" description="Prevent creation of selfIntersecting faces" tooltip="When closing an holes it tries to prevent the creation of faces that intersect faces adjacent to the boundary of the hole. It is an heuristic, non intersetcting hole filling can be NP-complete." value="true" type="RichBool"/>
+ </filter>
+</FilterScript>

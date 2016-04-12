@@ -8,10 +8,11 @@
 
 
 -- Load some meshes to be processed
-global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Circuit\\hi-res\\*.obj"
+-- global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Circuit\\hi-res\\*.obj"
 -- global meshFileNames = getFiles "I:\\Collection\\*.obj"
-global baseDirectory = "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Circuit"
-global outputDirectory = baseDirectory + "\\neuro_processor_2"
+global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Collection\\taubin-smooth\\bipolar-ts-low\\*.obj"
+global baseDirectory = "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Collection\\taubin-smooth\\"
+global outputDirectory = baseDirectory + "\\all_cells"
 
 
 -- Make directory for iterative processing
@@ -245,11 +246,11 @@ fn processMesh mesh = (
 	bioStruct.run() -- Run bioize on Meshes
 
 	-- Export meshes at different mip levels
-	for i = 1 to 4 do (  -- Changed to 1 to only downsample first mip level
+	for i = 1 to 1 do (  -- Changed to 1 to only downsample first mip level
 		local decimationFactor
 
 		if i == 1  then
-			decimationFactor = 5 -- Default 5
+			decimationFactor = 1 -- Default 5
 		else if i == 2 then
 			decimationFactor = 10
 		else if i == 3 then
@@ -300,13 +301,13 @@ fn importMesh mesh = (
 fn loopMesh = (
 	print "Beginning Mesh Processing..\n"
 
-	makeDirectory()
+-- 	makeDirectory()
 
 	for i = 1 to meshFileNames.count do (
 		local mesh = meshFileNames[i]
 
-		processMesh mesh
--- 		importMesh mesh
+-- 		processMesh mesh
+		importMesh mesh
 
 		-- Run garbage collection
 		print "Running garbage collection.."
