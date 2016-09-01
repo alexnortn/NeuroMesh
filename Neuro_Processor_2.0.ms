@@ -9,8 +9,8 @@
 
 -- Load some meshes to be processed
 -- global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Circuit\\hi-res\\*.obj"
--- global meshFileNames = getFiles "I:\\Collection\\*.obj"
-global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Collection\\taubin-smooth\\bipolar-ts-low\\*.obj"
+global meshFileNames = getFiles "I:\\Istanbul-Biennial\\downsample_2\\bc\\*.obj"
+-- global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Collection\\taubin-smooth\\bipolar-ts-low\\*.obj"
 global baseDirectory = "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Collection\\taubin-smooth\\"
 global outputDirectory = baseDirectory + "\\all_cells"
 

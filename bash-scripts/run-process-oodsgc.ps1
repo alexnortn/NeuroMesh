@@ -2,9 +2,10 @@
 # Neuro Processor 3.0
 
 # Define paths
-$inputdirectory = "I:\meshlab\oodsgc\"
-$outputdirectory = "I:\meshlab\oodsgc-ts\"
-$meshscript = "E:\GitHub\NeuroMesh\meshlab-scripts\neuro-processor-oodsgc-batch.mlx"
+# $inputdirectory = "I:\meshlab\bipolar\"
+$inputdirectory = "I:\TFF\Collection\oodsgc_1\"
+$outputdirectory = "I:\Istanbul-Biennial\downsample_2\oodsgc\"
+$meshscript = "E:\GitHub\NeuroMesh\meshlab-scripts\neuro-processor-sac-oodsgc-istanbul-1.mlx"
 
 # Grab all the items in specified directory
 $items = Get-ChildItem -Path $inputdirectory
@@ -19,7 +20,6 @@ foreach ($item in $items) {
         $inputfile = $inputdirectory + $item
         $outputfile = $outputdirectory + $item.Name;
         Write-Host "Output:" + $outputfile;
-        # $outputfile = $item.Name;
         # Run Meshlab | Save as obj, only vertex + face normals
         meshlabserver -i $inputfile -o $outputfile -s $meshscript -om vc vn;
         Write-Host "Completed" + $item.Name;
