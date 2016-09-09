@@ -3,8 +3,8 @@
 
 # Define paths
 # $inputdirectory = "I:\meshlab\bipolar\"
-$inputdirectory = "I:\TFF\Collection\oodsgc_1\"
-$outputdirectory = "I:\Istanbul-Biennial\downsample_2\oodsgc\"
+$inputdirectory = "I:\neurons\cvrt\"
+$outputdirectory = "I:\neurons\downsample\"
 $meshscript = "E:\GitHub\NeuroMesh\meshlab-scripts\neuro-processor-sac-oodsgc-istanbul-1.mlx"
 
 # Grab all the items in specified directory

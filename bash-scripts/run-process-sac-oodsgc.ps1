@@ -3,9 +3,9 @@
 
 # Define paths
 # $inputdirectory = "I:\meshlab\bipolar\"
-$inputdirectory = "I:\Collection\sac\"
-$outputdirectory = "I:\meshlab\oodsgc-ts-low\"
-$meshscript = "E:\GitHub\NeuroMesh\meshlab-scripts\neuro-processor-sac-oodsgc-low-batch.mlx"
+$inputdirectory = "I:\neurons\ganglion\obj7\"
+$outputdirectory = "I:\neurons\ganglion\meshesOptimizedHigh\"
+$meshscript = "E:\GitHub\NeuroMesh\meshlab-scripts\neuro-processor-sac-oodsgc-istanbul-1.mlx"
 
 # Grab all the items in specified directory
 $items = Get-ChildItem -Path $inputdirectory

@@ -2,8 +2,8 @@
 # Neuro Processor 3.0
 
 # Define paths
-$inputdirectory = "I:\neurons\raw\"
-$outputdirectory = "I:\neurons\cvrt\"
+$inputdirectory = "I:\neurons\ganglion\meshesHi11\"
+$outputdirectory = "I:\neurons\ganglion\obj\"
 $meshscript = "c:\neuro-processor.mlx" # Could simultaneously downsample + smooth neurons --> Next time
 $inputFormat = ".ctm"
 $outputFormat = ".obj"
