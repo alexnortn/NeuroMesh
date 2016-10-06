@@ -8,23 +8,10 @@
 
 
 -- Load some meshes to be processed
-global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Projects\\Eyewire\\FullTime\\NEO\\3DSMAX\\sceneassets\\meshes\\pinky\\origin\\*.obj"
+global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Projects\\Eyewire\\FullTime\\NEO\\3DSMAX\\sceneassets\\meshes\\pinky\\downsampled_50\\*.obj"
 -- global meshFileNames = getFiles "I:\\neurons\\ganglion\\meshesOptimized\\*.obj"
 -- global meshFileNames = getFiles "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Collection\\taubin-smooth\\bipolar-ts-low\\*.obj"
-global baseDirectory = "E:\\Drive\\Dropbox (MIT)\\Eyewire\\FullTime\\TribecaFF\\Assets\\Cells\\Collection\\taubin-smooth\\"
-global outputDirectory = baseDirectory + "\\all_cells"
-
-
--- Make directory for iterative processing
-fn makeDirectory = (
--- 	iterations = GetDirectories(baseDirectory + "/*")
--- 	iterations = iterations.count + 1
--- 	iterations = iterations as string
-
--- 	outputDirectory = outputDirectory + "-" + iterations
-	makeDir outputDirectory
-	print outputDirectory as string
-)
+global outputDirectory = "E:\\Drive\\Dropbox (MIT)\\Projects\\Eyewire\\FullTime\\NEO\\3DSMAX\\sceneassets\\meshes\\pinky\\origin_50"
 
 
 /*
@@ -89,11 +76,22 @@ fn nCapHoles obj = (
 
 	print "Applying Cap Holes Modifier.."
 
-	local CapHolesModifier = cap_holes()				-- Delcare modifier
-		  CapHolesModifier.Smooth_With_Old_Faces = 1 			-- Set attributes
+	local CapHolesModifier = cap_holes()					-- Delcare modifier
 		  CapHolesModifier.Make_All_New_Edges_Visible = 1 	-- Set attributes
 	
 	addModifier obj CapHolesModifier 					-- Apply modifier
+
+	print "Complete."
+)
+
+fn nOrigin obj = (
+	/*
+		Position mesh at origin
+	*/
+
+	print "Applying Origin Transform.."
+	
+	obj.pos = [0,0,0] 		-- Apply modifier
 
 	print "Complete."
 )
@@ -165,10 +163,10 @@ fn bioize mesh = (
 
 -- 	nTurboSmooth mesh 1 -- Apply TurboSmooth (2 skeleton) (1 volumetric)
 
-	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
-	nNormalizer mesh      		-- Unify Normals
+-- 	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+	nOrigin mesh      		-- Transform Mesh Origin
 	
-	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
+-- 	ConvertTo mesh Editable_Poly -- Make sure we are dealing with Editable Poly
 )
 
 fn optimizeMesh mesh percent = (
@@ -257,9 +255,9 @@ fn processMesh mesh = (
 	-- Set the name of the current import
 	-- Assume the current import name <default>
 -- 	local activeMesh = getNodeByName default -- Note this only works with og omni cells
--- 	local activeMesh = getNodeByName meshName -- Note this only works with og omni cells
+	local activeMesh = getNodeByName meshName -- Note this only works with og omni cells
 	
-	local activeMesh = getNodeByName "default"  -- Note this only works with og omni cells
+-- 	local activeMesh = getNodeByName "default"  -- Note this only works with og omni cells
 	activeMesh.name = meshName
 
 	bioStruct = runProcess activeMesh bioize i -- Decimate mesh to 10% original
@@ -270,7 +268,7 @@ fn processMesh mesh = (
 		local decimationFactor
 
 		if i == 1  then
-			decimationFactor = 1 -- Default 5
+			decimationFactor = 5 -- Default 5
 		else if i == 2 then
 			decimationFactor = 10
 		else if i == 3 then
@@ -282,10 +280,11 @@ fn processMesh mesh = (
 		else if i == 6 then
 			decimationFactor = 75
 
-		optimizeMesh activeMesh decimationFactor -- Optimize mesh at different mip levels
+-- 		optimizeMesh activeMesh decimationFactor -- Optimize mesh at different mip levels
 
-		decimationFactor = decimationFactor as string
+-- 		decimationFactor = decimationFactor as string
 
+-- 		local meshExpName = activeMesh.name + "_" + decimationFactor
 		local meshExpName = activeMesh.name
 		exportMesh meshExpName
 	)
@@ -321,13 +320,11 @@ fn importMesh mesh = (
 fn loopMesh = (
 	print "Beginning Mesh Processing..\n"
 
--- 	makeDirectory()
-
 	for i = 1 to meshFileNames.count do (
 		local mesh = meshFileNames[i]
 
--- 		processMesh mesh
-		importMesh mesh
+		processMesh mesh
+-- 		importMesh mesh
 
 		-- Run garbage collection
 		print "Running garbage collection.."

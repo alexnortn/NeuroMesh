@@ -2,9 +2,8 @@
 # Neuro Processor 3.0
 
 # Define paths
-$inputdirectory = "I:\neurons\ganglion\meshesHi11\"
-$outputdirectory = "I:\neurons\ganglion\obj\"
-$meshscript = "c:\neuro-processor.mlx" # Could simultaneously downsample + smooth neurons --> Next time
+$inputdirectory = "E:\Drive\Dropbox (MIT)\Projects\Eyewire\FullTime\NEO\3DSMAX\sceneassets\meshes\pinky\3\"
+$outputdirectory = "E:\Drive\Dropbox (MIT)\Projects\Eyewire\FullTime\NEO\3DSMAX\sceneassets\meshes\pinky\3.1\"
 $inputFormat = ".ctm"
 $outputFormat = ".obj"
 
@@ -21,9 +20,9 @@ foreach ($item in $items) {
         $inputfile = $inputdirectory + $item
         $outputfile = $outputdirectory + ($item.Name).Split("{.}")[0] + $outputFormat;
         Write-Host "Output:" + $outputfile;
-        # Run Meshlab | Save as obj, only vertex + face normals
-        # meshlabserver -i $inputfile -o $outputfile -s $meshscript -om vc vn;
+
         ctmconv $inputfile $outputfile 
+
         Write-Host "Completed" + $item.Name;
     }
 }

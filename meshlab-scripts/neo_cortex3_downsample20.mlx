@@ -1,7 +1,7 @@
 <!DOCTYPE FilterScript>
 <FilterScript>
  <filter name="Quadric Edge Collapse Decimation">
-  <Param value="223959" name="TargetFaceNum" description="Target number of faces" tooltip="The desired final number of faces." type="RichInt"/>
+  <Param value="0" name="TargetFaceNum" description="Target number of faces" tooltip="The desired final number of faces." type="RichInt"/>
   <Param value="0.2" name="TargetPerc" description="Percentage reduction (0..1)" tooltip="If non zero, this parameter specifies the desired final size of the mesh as a percentage of the initial size." type="RichFloat"/>
   <Param value="1" name="QualityThr" description="Quality threshold" tooltip="Quality threshold for penalizing bad shaped faces.&lt;br>The value is in the range [0..1]&#xa; 0 accept any kind of face (no penalties),&#xa; 0.5  penalize faces with quality &lt; 0.5, proportionally to their shape&#xa;" type="RichFloat"/>
   <Param value="true" name="PreserveBoundary" description="Preserve Boundary of the mesh" tooltip="The simplification process tries to do not affect mesh boundaries during simplification" type="RichBool"/>

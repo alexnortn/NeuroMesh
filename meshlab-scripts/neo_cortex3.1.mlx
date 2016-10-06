@@ -5,12 +5,6 @@
   <Param value="false" name="NonClosedOnly" description="Select only non closed components" tooltip="" type="RichBool"/>
  </filter>
  <filter name="Delete Selected Faces and Vertices"/>
- <filter name="Close Holes">
-  <Param value="30" name="MaxHoleSize" description="Max size to be closed " tooltip="The size is expressed as number of edges composing the hole boundary" type="RichInt"/>
-  <Param value="false" name="Selected" description="Close holes with selected faces" tooltip="Only the holes with at least one of the boundary faces selected are closed" type="RichBool"/>
-  <Param value="true" name="NewFaceSelected" description="Select the newly created faces" tooltip="After closing a hole the faces that have been created are left selected. Any previous selection is lost. Useful for example for smoothing the newly created holes." type="RichBool"/>
-  <Param value="true" name="SelfIntersection" description="Prevent creation of selfIntersecting faces" tooltip="When closing an holes it tries to prevent the creation of faces that intersect faces adjacent to the boundary of the hole. It is an heuristic, non intersetcting hole filling can be NP-complete." type="RichBool"/>
- </filter>
  <filter name="Select None">
   <Param value="true" name="allFaces" description="De-select all Faces" tooltip="If true the filter will de-select all the faces." type="RichBool"/>
   <Param value="true" name="allVerts" description="De-select all Vertices" tooltip="If true the filter will de-select all the vertices." type="RichBool"/>
